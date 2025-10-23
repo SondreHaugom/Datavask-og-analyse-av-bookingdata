@@ -37,10 +37,14 @@ def read_csv_file():
 def clean_data(csv_file):
         if csv_file is not None:
             csv_file = csv_file.drop_duplicates(subset=["Ressurs","Epost","Starttid","Slutttid","Organisator","Tittel"])
+            # Fjerner rader med ugyldige tider
+            mask = (csv_file["Starttid"] == "00:00:00") & (csv_file["Slutttid"] == "00:00:00")
+            if mask.any():
+                csv_file = csv_file.drop(csv_file[mask].index)
         return csv_file
 
 # Funksjon for å filtrere data
-def filter_data(): 
+def filter_data():
     # henter renset data
     csv_file = read_csv_file()
     csv_file = clean_data(csv_file)
