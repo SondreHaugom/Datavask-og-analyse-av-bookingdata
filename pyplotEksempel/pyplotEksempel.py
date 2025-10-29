@@ -3,19 +3,24 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def diagram():
+    # Leser den filtrerte CSV-filen
     filtered_data = pd.read_csv('kjoretoy_resultat.csv')
-
-    x_values = list(range(1, 13))  # 1-12 for månedene
-    month_labels = ["jan", "feb", "mars", "april", "mai", "juni", "juli", "aug", "sep", "okt", "nov", "des"]
+    # behandler starttid som datetime
     filtered_data['Starttid'] = pd.to_datetime(filtered_data['Starttid'], errors='coerce')
-    bookings = filtered_data.groupby(filtered_data['Starttid'].dt.month).size()
+    # legger til en kolonne for år-måned
+    filtered_data['År-måned'] = filtered_data['Starttid'].dt.to_period('M')
+    # grupperer data etter år-måned og teller antall bookinger
+    bookings = filtered_data.groupby('År-måned').size()
 
-    plt.title("Kjøretøy Bookinger 2011-2026")
-    plt.xticks(x_values, month_labels, rotation=45)  # Måneder på x-aksen
-    plt.bar(bookings.index, bookings.values)
-    for i, v in enumerate(bookings.values):
-        plt.text(bookings.index[i], v + 1, str(v), ha='center') 
-    
+    # Lager linjediagram
+    plt.figure(figsize=(16, 6))
+    plt.plot(bookings.index.astype(str), bookings.values, marker='o')
+    plt.title("Kjøretøy Bookinger per måned (2011-2026)")
+    plt.xlabel("År-Måned")
+    plt.ylabel("Antall Bookinger")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
     plt.show()
+
 
 diagram()
